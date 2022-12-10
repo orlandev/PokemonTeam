@@ -3,70 +3,55 @@ package com.orlandev.pokemonteam
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.orlandev.pokemonteam.ui.theme.PokemonTestTheme
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.core.view.WindowCompat
+import com.google.accompanist.adaptive.calculateDisplayFeatures
+import com.orlandev.pokemonteam.ui.AppContent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import me.sargunvohra.lib.pokekotlin.client.PokeApiClient
-import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+
         setContent {
-            PokemonTestTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    val resultTest = remember {
-                        mutableStateOf<List<NamedApiResource>?>(null)
-                    }
-
-                    val scope = rememberCoroutineScope()
-
-                    LaunchedEffect(Unit) {
-                        scope.launch(Dispatchers.IO) {
-                            val a = PokeApiClient()
-                            val list = a.getRegionList(0, 100)
-                            resultTest.value = list.results
-                        }
-
-                    }
-
-                    resultTest.value?.let { result ->
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(result) {
-                                Text(text = it.name)
-                            }
-                        }
-                    }
-                }
-            }
+            val windowSize = calculateWindowSizeClass(this)
+            val displayFeatures = calculateDisplayFeatures(this)
+            AppContent(windowSizeClass = windowSize, displayFeatures = displayFeatures)
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+
+/***
+ *
+ *   val resultTest = remember {
+mutableStateOf<List<NamedApiResource>?>(null)
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    PokemonTestTheme {
-        Greeting("Android")
-    }
+val scope = rememberCoroutineScope()
+
+LaunchedEffect(Unit) {
+scope.launch(Dispatchers.IO) {
+val a = PokeApiClient()
+val list = a.getRegionList(0, 100)
+resultTest.value = list.results
 }
+
+}
+
+resultTest.value?.let { result ->
+LazyColumn(modifier = Modifier.fillMaxSize()) {
+items(result) {
+Text(text = it.name)
+}
+}
+}
+}
+ */
+
