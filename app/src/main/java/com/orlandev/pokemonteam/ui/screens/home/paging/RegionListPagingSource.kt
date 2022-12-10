@@ -29,10 +29,10 @@ class RegionListPagingSource(
             TAG,
             "Load function called using params [ KEY: ${params.key} - LOADSIZE: ${params.loadSize}]"
         )
-        val nextPage = params.key ?: 1
-        val result = repository.getRegionList(offset = params.key ?: 1, MAX_FETCH)
+        val nextPage = (params.key ?: 1)
+        val result = repository.getRegionList(offset = (params.key ?: 0) * MAX_FETCH, MAX_FETCH)
         val currentPage = params.key ?: 1
-        val pageSize = result.count
+        val pageSize = MAX_FETCH
         val list = result.results
         return PagingHelper.getReturn(
             list = list,

@@ -2,7 +2,7 @@
     <string name="app_name">PokemonTeam</string>
     <string name="home">Inicio</string>
     <string name="error_regions_messages">Ha ocurrido un error</string>
-    <string name="btn_retry">Reintentar</string>
+    <string name="btn_retry">Recargar</string>
     <string name="error_title">Error</string>
     <string name="retry">Reintentar</string>
     <string name="cancel">Cancelar</string>

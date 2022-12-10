@@ -2,10 +2,12 @@ package com.orlandev.pokemonteam.ui.common
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -24,12 +26,13 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.orlandev.pokemontest.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T : Any> PagingView(
     modifier: Modifier = Modifier,
     list: LazyPagingItems<T>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: LazyListScope.() -> Unit
+    content: LazyStaggeredGridScope.() -> Unit
 ) {
 
     Crossfade(targetState = list.loadState.refresh is LoadState.Error, animationSpec = tween(700)) {
@@ -38,31 +41,35 @@ fun <T : Any> PagingView(
             val e = stringResource(id = R.string.error_regions_messages)
             ErrorScreen(message = e, onRetry = list::refresh)
         } else {
-            LazyColumn(
+            LazyVerticalStaggeredGrid(
                 modifier = modifier,
                 contentPadding = contentPadding,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                columns = StaggeredGridCells.Fixed(2)
             ) {
                 content()
                 list.apply {
-                    when {
-                        //manage load state when next response page is loading
-                        loadState.append is LoadState.Loading -> item {
+                    when (//manage load state when next response page is loading
+                        loadState.append) {
+                        is LoadState.Loading -> item {
                             ListLoadingView()
                         }
 
-                        loadState.append is LoadState.Error && loadState.append !is LoadState.Loading -> {
-                            val e = loadState.append as LoadState.Error
-                            item {
-                                ListErrorView(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(18.dp),
-                                    message = e.error.message.toString(),
-                                    onClick = list::retry
-                                )
-                            }
-                        }
+                        /*
+                         //NO USAR POR EL MOMENTO
+                         loadState.append is LoadState.Error && loadState.append !is LoadState.Loading -> {
+                             val e = loadState.append as LoadState.Error
+                             item {
+                                 ListErrorView(
+                                     modifier = Modifier
+                                         .fillMaxWidth()
+                                         .padding(18.dp),
+                                     message = e.error.message.toString(),
+                                     onClick = list::retry
+                                 )
+                             }
+                         }*/
+                        else -> {}
                     }
                 }
             }
